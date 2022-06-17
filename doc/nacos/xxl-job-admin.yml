@@ -1,0 +1,67 @@
+### web
+server.port: 8081
+
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${spring.cloud.nacos.config.server-addr}
+        namespace: ${spring.cloud.nacos.config.namespace}
+        group: ${spring.cloud.nacos.config.group}
+        register-enabled: true
+        metadata: #服务健康
+          management:
+            context-path: '${server.servlet.context-path}/actuator'
+
+  datasource:
+    #取值包含postgres、mysql
+    db-type: postgres
+    url: jdbc:postgresql://XXXX:XXXX/job_2.3.1?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&rewriteBatchedStatements=true
+    username: postgres
+    password: Superman@2021
+    driver-class-name: org.postgresql.Driver
+    ### datasource-pool
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari.minimum-idle: 10
+    hikari.maximum-pool-size: 30
+    hikari.auto-commit: true
+    hikari.idle-timeout: 30000
+    hikari.pool-name: HikariCP
+    hikari.max-lifetime: 900000
+    hikari.connection-timeout: 10000
+    hikari.connection-test-query: SELECT 1
+    hikari.validation-timeout: 1000
+
+### xxl-job, email
+  mail:
+    host: smtp.qq.com
+    port: 25
+    username: xxx@qq.com
+    from: xxx@qq.com
+    password: xxx
+    properties.mail.smtp.auth: true
+    properties.mail.smtp.starttls.enable: true
+    properties.mail.smtp.starttls.required: true
+    properties.mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
+
+
+### mybatis
+mybatis:
+  mapper-locations: classpath:/mybatis-mapper/${spring.datasource.db-type}/*Mapper.xml
+#mybatis.type-aliases-package: com.xxl.job.admin.core.model
+
+
+xxl:
+  job:
+    ### xxl-job, access token
+    accessToken: default_token
+    ### xxl-job, i18n (default is zh_CN, and you can choose "zh_CN", "zh_TC" and "en")
+    i18n: zh_CN
+    ## xxl-job, triggerpool max size
+    triggerpool:
+      fast:
+        max: 200
+      slow:
+        max: 100
+    ### xxl-job, log retention days
+    logretentiondays: 30

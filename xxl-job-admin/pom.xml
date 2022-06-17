@@ -23,6 +23,26 @@
 
 	<dependencies>
 
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-bootstrap</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+
+		<!--  SpringCloud alibaba nacos    -->
+		<dependency>
+			<groupId>com.alibaba.cloud</groupId>
+			<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+			<version>2021.0.1.0</version>
+		</dependency>
+
+		<!--   nacos config     -->
+		<dependency>
+			<groupId>com.alibaba.cloud</groupId>
+			<artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+			<version>2021.0.1.0</version>
+		</dependency>
+
 		<!-- starter-web：spring-webmvc + autoconfigure + logback + yaml + tomcat -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -92,6 +112,9 @@
 						<goals>
 							<goal>repackage</goal>
 						</goals>
+						<configuration>
+							<outputDirectory>${project.basedir}/build</outputDirectory>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
