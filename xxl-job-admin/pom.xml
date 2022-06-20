@@ -113,7 +113,7 @@
 							<goal>repackage</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${project.basedir}/build</outputDirectory>
+							<outputDirectory>${project.basedir}/image/build</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
