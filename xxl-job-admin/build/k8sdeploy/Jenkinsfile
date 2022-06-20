@@ -129,7 +129,7 @@ node('master') {
       echo "5. Change YAML File Stage"
       dir(path: "${module}/build/k8sdeploy") {
 
-        sh "sed -i 's/\${IMAGE_TAG}/${image_tag}/' ${module}.yaml"
+        sh "sed -i 's#\${IMAGE_TAG}#${image_tag}#' ${module}.yaml"
         sh "sed -i 's/\${K8S_NAMESPACE}/${k8s_namespace}/' ${module}.yaml"
         sh "sed -i 's/\${POD_NUM}/${pod_num}/' ${module}.yaml"
 
