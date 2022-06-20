@@ -1,0 +1,2 @@
+#!/bin/bash
+nohup java -javaagent:/skywalking/skywalking-agent.jar -Dskywalking.agent.service_name=${SKYWALKING_AGENT_SERVICE_NAME} -Dskywalking.collector.backend_service=${SKYWALKING_COLLECTOR_SERVICE} -jar /xxl-job-admin.jar --spring.cloud.bootstrap.location=/bootstrap.yml >/dev/null 2>&1

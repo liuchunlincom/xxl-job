@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: prod
+  application:
+    name: xxl-job-admin
+  cloud:
+    nacos:
+      config:
+        server-addr: ${NACOS_HOST}
+        file-extension: yaml
+        namespace: ${NACOS_NAMESPACE}
+        group: ${NACOS_GROUP}

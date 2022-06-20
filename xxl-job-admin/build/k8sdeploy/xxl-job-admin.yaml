@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ${K8S_NAMESPACE}
+  labels:
+    app: ps-admin
+  name: ps-admin
+spec:
+  ports:
+  - name: service
+    port: 8081
+    protocol: TCP
+    targetPort: 9000
+  selector:
+    app: ps-admin
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: ${K8S_NAMESPACE}
+  name: ps-admin-deployment
+spec:
+  replicas: ${POD_NUM}
+  selector:
+      matchLabels:
+        app: ps-admin
+  template:
+    metadata:
+      labels:
+        app: ps-admin
+    spec:
+      containers:
+      - name: ps-admin
+        image: ${IMAGE_TAG}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9000
