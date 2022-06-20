@@ -3,8 +3,8 @@ kind: Service
 metadata:
   namespace: ${K8S_NAMESPACE}
   labels:
-    app: ps-admin
-  name: ps-admin
+    app: xxl-job-admin
+  name: xxl-job-admin
 spec:
   ports:
   - name: service
@@ -12,7 +12,7 @@ spec:
     protocol: TCP
     targetPort: 9000
   selector:
-    app: ps-admin
+    app: xxl-job-admin
 
 
 ---
@@ -20,19 +20,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: ${K8S_NAMESPACE}
-  name: ps-admin-deployment
+  name: xxl-job-admin-deployment
 spec:
   replicas: ${POD_NUM}
   selector:
       matchLabels:
-        app: ps-admin
+        app: xxl-job-admin
   template:
     metadata:
       labels:
-        app: ps-admin
+        app: xxl-job-admin
     spec:
       containers:
-      - name: ps-admin
+      - name: xxl-job-admin
         image: ${IMAGE_TAG}
         imagePullPolicy: Always
         ports:
