@@ -62,7 +62,7 @@ node('master') {
         git(
 
             credentialsId: '8f436d25-8c08-4a6c-8b0f-6c743b22da7e',
-            url: "https://gitlab.navinfo.com/CenNavi/PublicSafe/IndustryProducts/CommonComponents/SourceCode/BackEndCode/ps-framework.git",
+            url: "https://gitlab.navinfo.com/CenNavi/PublicSafe/IndustryProducts/CommonComponents/SourceCode/BackEndCode/ps-job.git",
             branch: "${branch}",
             changelog: true
 
