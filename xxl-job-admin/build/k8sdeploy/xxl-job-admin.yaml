@@ -10,10 +10,11 @@ spec:
   - name: service
     port: 8081
     protocol: TCP
-    targetPort: 9000
+    targetPort: ${INNER_PORT}
+    nodePort: ${EXPOSE_PORT}
   selector:
     app: xxl-job-admin
-
+  type: NodePort
 
 ---
 apiVersion: apps/v1
@@ -36,4 +37,4 @@ spec:
         image: ${IMAGE_TAG}
         imagePullPolicy: Always
         ports:
-        - containerPort: 9000
+        - containerPort: ${INNER_PORT}

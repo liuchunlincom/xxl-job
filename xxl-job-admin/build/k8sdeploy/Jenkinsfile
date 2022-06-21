@@ -17,7 +17,8 @@ node('master') {
 
               k8s_namespace = "${params.k8s_namespace}"
 
-              port = "${params.port}"
+              expose_port = "${params.port}"
+              inner_port = "${params.inner_port}"
               pod_num = "${params.pod_num}"
               branch = "${params.branch}"
 
@@ -132,6 +133,8 @@ node('master') {
         sh "sed -i 's#\${IMAGE_TAG}#${image_tag}#' ${module}.yaml"
         sh "sed -i 's/\${K8S_NAMESPACE}/${k8s_namespace}/' ${module}.yaml"
         sh "sed -i 's/\${POD_NUM}/${pod_num}/' ${module}.yaml"
+        sh "sed -i 's/\${INNER_PORT}/${inner_port}/' ${module}.yaml"
+        sh "sed -i 's/\${EXPOSE_PORT}/${expose_port}/' ${module}.yaml"
 
       }
 
