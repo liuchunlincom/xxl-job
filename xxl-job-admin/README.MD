@@ -11,6 +11,20 @@
         nacos客户端版本：1.4.2
         配置方式：可通过nacos原生方式支持nacos配置，也可以按照springcloud的方式配置（建议）
 
+## bean模式接入
+  
+     a) 在对应微服务编写执行类
+     
+     b) 微服务中增加xxl-job-admin配置，如果微服务以docker方式启动请注意xxl.job.executor.ip，xxl.job.executor.port参数配置，确保微服务与admin之间服务通信畅通
+     
+     c) 部署admin控制台,数据库脚本参见build/init/table*.sql
+     
+     d) 在admin页面或者控制台配置相关执行器及任务
+     
+       
+     
+     
+     
 
 ## QA：
   
