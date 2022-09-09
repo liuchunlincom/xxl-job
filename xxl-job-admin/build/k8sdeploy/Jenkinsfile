@@ -147,11 +147,11 @@ node('master') {
 
         if(env == 'dev' || env == 'test'){
 
-            sh "scp ${module}.yaml root@192.168.154.104:/APP/deploy/${product}/${module}.yaml"
+            sh "scp ${module}.yaml root@10.52.0.131:/APP/deploy/${product}/${module}.yaml"
 
            try {//按照编排文件删除原有服务
 
-                sh '''ssh root@192.168.154.104 << EOF
+                sh '''ssh root@10.52.0.131 << EOF
 
     				kubectl delete -f /APP/deploy/${product}/${module}.yaml
 
@@ -163,7 +163,7 @@ EOF'''
 
             }finally {//按照编排文件部署服务
 
-                sh '''ssh root@192.168.154.104 << EOF
+                sh '''ssh root@10.52.0.131 << EOF
 
     				kubectl apply -f /APP/deploy/${product}/${module}.yaml
 
@@ -173,11 +173,11 @@ EOF'''
 
         }else {
 
-            sh "scp ${module}.yaml root@192.168.154.119:/APP/deploy/${product}/${module}.yaml"
+            sh "scp ${module}.yaml root@10.52.0.130:/APP/deploy/${product}/${module}.yaml"
 
            try {//按照编排文件删除原有服务
 
-                sh '''ssh root@192.168.154.119 << EOF
+                sh '''ssh root@10.52.0.130 << EOF
 
     				kubectl delete -f /APP/deploy/${product}/${module}.yaml
 
@@ -189,7 +189,7 @@ EOF'''
 
             }finally {//按照编排文件部署服务
 
-                sh '''ssh root@192.168.154.119 << EOF
+                sh '''ssh root@10.52.0.130 << EOF
 
     				kubectl apply -f /APP/deploy/${product}/${module}.yaml
 
