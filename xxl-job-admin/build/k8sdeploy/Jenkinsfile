@@ -1,0 +1,208 @@
+node('master') {
+    stage('Clone') {
+
+      echo "1.Clone Stage"
+
+      script {
+
+              env = "${params.env}"
+              module = "${params.module}"
+              product = "${params.product}"
+              if( product == ''){
+                product = 'ga'
+              }
+
+              harbor_lib = "${harbor_lib}"
+              harbor_host = "${harbor}"
+
+              k8s_namespace = "${params.k8s_namespace}"
+
+              expose_port = "${params.port}"
+              inner_port = "${params.inner_port}"
+              pod_num = "${params.pod_num}"
+              branch = "${params.branch}"
+
+              nacos_group = "${params.nacos_group}"
+              if(env=='dev'){
+
+                  nacos_host = "${nacos_host_test}"
+                  nacos_namespace = "${nacos_namespace_dev}"
+
+              }else if( env=='test'){
+
+                  nacos_host = "${nacos_host_test}"
+                  nacos_namespace = "${nacos_namespace_test}"
+
+              }else if(env=='prod'){
+
+                  nacos_host = "${nacos_host_prod}"
+                  nacos_namespace = "${nacos_namespace_prod}"
+
+              }else if(env=='lcl'){
+
+                  nacos_host = "${nacos_host_prod}"
+                  nacos_namespace = "${nacos_namespace_lcl}"
+
+              }
+
+              if("${params.skywalking_monitor}"=='true'){
+
+                  echo "设置接入skywalking监控开启。。。"
+                  skywalking_agent_service_name = "${product}-${module}-${env}"
+                  skywalking_collector_service = "${params.skywalking_collector_service}"
+
+              }else{
+
+                  echo "设置接入skywalking监控未开启。。。"
+
+              }
+
+
+            }
+
+        git(
+
+            credentialsId: '8f436d25-8c08-4a6c-8b0f-6c743b22da7e',
+            url: "https://gitlab.navinfo.com/CenNavi/PublicSafe/IndustryProducts/CommonComponents/SourceCode/BackEndCode/ps-job.git",
+            branch: "${branch}",
+            changelog: true
+
+        )
+
+        script {
+
+            module_version = sh(returnStdout: true, script: '/data/apache-maven-3.5.3/bin/mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -f ${module}/pom.xml -q -DforceStdout')
+            image_tag = "${harbor_host}/${harbor_lib}/${module}-${env}:${module_version}"
+        }
+
+    }
+
+
+    stage('package') {
+
+      echo "2.Test Stage"
+      sh "rm -rf ${module}/build/image/*.jar"
+      sh "mvn package -f ${module}/pom.xml "
+
+    }
+
+
+    stage('Build') {
+
+      echo "3.Build Docker Image Stage"
+
+      dir(path: "${module}/build/image") {
+
+        sh "pwd"
+
+        sh "sed -i 's/\${NACOS_HOST}/${nacos_host}/' bootstrap.yml"
+        sh "sed -i 's/\${NACOS_GROUP}/${nacos_group}/' bootstrap.yml"
+        sh "sed -i 's/\${NACOS_NAMESPACE}/${nacos_namespace}/' bootstrap.yml"
+
+       if ("${params.skywalking_monitor}"=='true'){
+
+            sh "sed -i 's/\${HARBOR_HOST}/${harbor_host}/' Dockerfile_skywalking"
+            sh "sed -i 's/\${SKYWALKING_AGENT_SERVICE_NAME}/${skywalking_agent_service_name}/' start_skywalking.sh"
+            sh "sed -i 's/\${SKYWALKING_COLLECTOR_SERVICE}/${skywalking_collector_service}/' start_skywalking.sh"
+            sh "docker build  -t ${image_tag} -f Dockerfile_skywalking ."
+
+       }else {
+
+            sh "sed -i 's/\${HARBOR_HOST}/${harbor_host}/' Dockerfile"
+            sh "docker build  -t ${image_tag} -f Dockerfile ."
+
+       }
+
+
+
+      }
+
+    }
+    stage('Push') {
+
+      echo "4.Push Docker Image Stage"
+      sh "docker login ${harbor_host} -u liuchunlin -p Liuchunlin12345"
+      sh "docker push ${image_tag}"
+
+    }
+    stage('YAML') {
+
+      echo "5. Change YAML File Stage"
+      dir(path: "${module}/build/k8sdeploy") {
+
+        sh "sed -i 's#\${IMAGE_TAG}#${image_tag}#' ${module}.yaml"
+        sh "sed -i 's/\${K8S_NAMESPACE}/${k8s_namespace}/' ${module}.yaml"
+        sh "sed -i 's/\${POD_NUM}/${pod_num}/' ${module}.yaml"
+        sh "sed -i 's/\${INNER_PORT}/${inner_port}/' ${module}.yaml"
+        sh "sed -i 's/\${EXPOSE_PORT}/${expose_port}/' ${module}.yaml"
+
+      }
+
+    }
+    stage('Deploy') {
+
+      echo "6. Deploy Stage"
+
+      dir(path: "${module}/build/k8sdeploy") {
+
+        if(env == 'dev' || env == 'test'){
+
+            sh "scp ${module}.yaml root@10.52.0.131:/APP/deploy/${product}/${module}.yaml"
+
+           try {//按照编排文件删除原有服务
+
+                sh '''ssh root@10.52.0.131 << EOF
+
+    				kubectl delete -f /APP/deploy/${product}/${module}.yaml
+
+EOF'''
+
+            } catch ( e ) {
+
+                echo "首次部署"
+
+            }finally {//按照编排文件部署服务
+
+                sh '''ssh root@10.52.0.131 << EOF
+
+    				kubectl apply -f /APP/deploy/${product}/${module}.yaml
+
+EOF'''
+
+            }
+
+        }else {
+
+            sh "scp ${module}.yaml root@10.52.0.130:/APP/deploy/${product}/${module}.yaml"
+
+           try {//按照编排文件删除原有服务
+
+                sh '''ssh root@10.52.0.130 << EOF
+
+    				kubectl delete -f /APP/deploy/${product}/${module}.yaml
+
+EOF'''
+
+            } catch ( e ) {
+
+                echo "首次部署"
+
+            }finally {//按照编排文件部署服务
+
+                sh '''ssh root@10.52.0.130 << EOF
+
+    				kubectl apply -f /APP/deploy/${product}/${module}.yaml
+
+EOF'''
+
+            }
+
+        }
+
+
+
+
+      }
+
+    }
+}

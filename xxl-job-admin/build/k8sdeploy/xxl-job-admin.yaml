@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ${K8S_NAMESPACE}
+  labels:
+    app: xxl-job-admin
+  name: xxl-job-admin
+spec:
+  ports:
+  - name: service
+    port: 8081
+    protocol: TCP
+    targetPort: ${INNER_PORT}
+    nodePort: ${EXPOSE_PORT}
+  selector:
+    app: xxl-job-admin
+  type: NodePort
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: ${K8S_NAMESPACE}
+  name: xxl-job-admin-deployment
+spec:
+  replicas: ${POD_NUM}
+  selector:
+      matchLabels:
+        app: xxl-job-admin
+  template:
+    metadata:
+      labels:
+        app: xxl-job-admin
+    spec:
+      containers:
+      - name: xxl-job-admin
+        image: ${IMAGE_TAG}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: ${INNER_PORT}

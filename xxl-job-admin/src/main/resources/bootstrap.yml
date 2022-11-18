@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: xxl-job-admin
+  cloud:
+    bootstrap.enabled: true
+    nacos:
+      config:
+        server-addr: 192.168.154.104:8849
+        file-extension: yaml
+        namespace: c2275df1-0df9-4e64-8e7f-3a011d534aa1 #lcl
+        #namespace: b065d595-cf3e-4f52-9b0c-56286b250080 #dev
+        #namespace: 00fc682a-9709-4406-a84a-22c863381942 #test
+        #namespace: 0f01f9e8-e590-4f9c-a4d4-b9564835ab26 #prod
+        #namespace: e15d3bc7-f1dd-4183-96c9-46f1d15ab970 #lz
+        #namespace: 548274e8-4350-481c-ab04-2108c67c7b15 #sun
+        group: PGIS_GROUP
+      discovery:
+        register-enabled: false
