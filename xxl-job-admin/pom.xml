@@ -86,10 +86,18 @@
 			<version>${mysql-connector-java.version}</version>
 		</dependency>
 
+        <!-- postgres  -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql.version}</version>
+		</dependency>
+
+		<!-- highgo  -->
+		<dependency>
+			<groupId>com.highgo</groupId>
+			<artifactId>HgdbJdbc</artifactId>
+			<version>${hgdbJdbc.version}</version>
 		</dependency>
 
 		<!-- xxl-job-core -->

@@ -3,14 +3,19 @@
   1） postgres数据库适配支持
   
        驱动版本：42.2.5
-       数据库切换方式：可通过参数（spring.datasource.db-type）控制切换mysql、postgres
+       数据库切换方式：可通过参数（spring.datasource.db-type）控制切换mysql、postgres、highgo，请选择：postgres
   
-  2） nacos适配支持
+  2） highgo数据库适配支持
   
         适配方式：引入Springcloud Alibaba(2021.0.1.0)注册中心、配置中心相关依赖
         nacos客户端版本：1.4.2
         配置方式：可通过nacos原生方式支持nacos配置，也可以按照springcloud的方式配置（建议）
-
+  
+  3） nacos适配支持
+  
+       驱动版本：6.2.2
+       数据库切换方式：可通过参数（spring.datasource.db-type）控制切换mysql、postgres、highgo，请选择：highgo
+       
 ## bean模式接入
   
      a) 在对应微服务编写执行类
