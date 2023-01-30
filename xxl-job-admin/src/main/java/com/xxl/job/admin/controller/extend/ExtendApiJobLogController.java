@@ -54,7 +54,7 @@ public class ExtendApiJobLogController {
 										int jobGroup, int jobId, int logStatus, String filterTime) {
 
 		// valid permission
-		JobInfoController.validPermission(request, jobGroup);	// 仅管理员支持查询全部；普通用户仅支持查询有权限的 jobGroup
+		//JobInfoController.validPermission(request, jobGroup);	// 仅管理员支持查询全部；普通用户仅支持查询有权限的 jobGroup
 		
 		// parse param
 		Date triggerTimeStart = null;
