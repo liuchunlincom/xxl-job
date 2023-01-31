@@ -31,46 +31,76 @@ public class ExtendApiJobInfoController {
 	private XxlJobService xxlJobService;
 	
 	@RequestMapping("/pageList")
-	@PermissionLimit(limit = false)
+	@PermissionLimit(limitType = "token")
 	public Map<String, Object> pageList(@RequestParam(required = false, defaultValue = "0") int start,  
 			@RequestParam(required = false, defaultValue = "10") int length,
 			int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author) {
 		
 		return xxlJobService.pageList(start, length, jobGroup, triggerStatus, jobDesc, executorHandler, author);
 	}
+
+	@RequestMapping("/queryById")
+	@PermissionLimit(limitType = "token")
+	public ReturnT<XxlJobInfo> queryById(@RequestParam(required = true) int id) {
+
+		return xxlJobService.queryById(id);
+
+	}
+
 	
 	@RequestMapping("/add")
-	@PermissionLimit(limit = false)
+	@PermissionLimit(limitType = "token")
 	public ReturnT<String> add(XxlJobInfo jobInfo) {
 		return xxlJobService.add(jobInfo);
 	}
 	
 	@RequestMapping("/update")
-	@ResponseBody
+	@PermissionLimit(limitType = "token")
 	public ReturnT<String> update(XxlJobInfo jobInfo) {
 		return xxlJobService.update(jobInfo);
 	}
 	
 	@RequestMapping("/remove")
-	@PermissionLimit(limit = false)
+	@PermissionLimit(limitType = "token")
 	public ReturnT<String> remove(int id) {
 		return xxlJobService.remove(id);
 	}
-	
+
+	/**
+	 * 停止(正在执行的任务)。
+	 *
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/kill")
+	@PermissionLimit(limitType = "token")
+	public ReturnT<String> kill(int id) {
+
+		return xxlJobService.kill(id);
+
+
+	}
+
+	/**
+	 * 终止后续任务.
+	 *
+	 * @param id
+	 * @return
+	 */
 	@RequestMapping("/stop")
-	@ResponseBody
+	@PermissionLimit(limitType = "token")
 	public ReturnT<String> pause(int id) {
 		return xxlJobService.stop(id);
 	}
 	
 	@RequestMapping("/start")
-	@PermissionLimit(limit = false)
+	@PermissionLimit(limitType = "token")
 	public ReturnT<String> start(int id) {
 		return xxlJobService.start(id);
 	}
 	
 	@RequestMapping("/trigger")
-	@PermissionLimit(limit = false)
+	@PermissionLimit(limitType = "token")
 	public ReturnT<String> triggerJob(int id, String executorParam, String addressList) {
 		// force cover job param
 		if (executorParam == null) {
@@ -81,8 +111,10 @@ public class ExtendApiJobInfoController {
 		return ReturnT.SUCCESS;
 	}
 
+
+
 	@RequestMapping("/nextTriggerTime")
-	@PermissionLimit(limit = false)
+	@PermissionLimit(limitType = "token")
 	public ReturnT<List<String>> nextTriggerTime(String scheduleType, String scheduleConf) {
 
 		XxlJobInfo paramXxlJobInfo = new XxlJobInfo();

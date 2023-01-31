@@ -15,9 +15,14 @@ import java.lang.annotation.Target;
 public @interface PermissionLimit {
 	
 	/**
-	 * 登录拦截 (默认拦截)
+	 * 认证拦截 (默认拦截)
 	 */
 	boolean limit() default true;
+
+	/**
+	 * 限制类型：login（登录拦截，默认）、token（access_token）
+	 */
+	String limitType() default "login";
 
 	/**
 	 * 要求管理员权限

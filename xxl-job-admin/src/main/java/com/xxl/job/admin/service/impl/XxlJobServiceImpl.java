@@ -1,16 +1,21 @@
 package com.xxl.job.admin.service.impl;
 
+import com.xxl.job.admin.core.complete.XxlJobCompleter;
 import com.xxl.job.admin.core.cron.CronExpression;
 import com.xxl.job.admin.core.model.XxlJobGroup;
 import com.xxl.job.admin.core.model.XxlJobInfo;
+import com.xxl.job.admin.core.model.XxlJobLog;
 import com.xxl.job.admin.core.model.XxlJobLogReport;
 import com.xxl.job.admin.core.route.ExecutorRouteStrategyEnum;
 import com.xxl.job.admin.core.scheduler.MisfireStrategyEnum;
 import com.xxl.job.admin.core.scheduler.ScheduleTypeEnum;
+import com.xxl.job.admin.core.scheduler.XxlJobScheduler;
 import com.xxl.job.admin.core.thread.JobScheduleHelper;
 import com.xxl.job.admin.core.util.I18nUtil;
 import com.xxl.job.admin.dao.*;
 import com.xxl.job.admin.service.XxlJobService;
+import com.xxl.job.core.biz.ExecutorBiz;
+import com.xxl.job.core.biz.model.KillParam;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.enums.ExecutorBlockStrategyEnum;
 import com.xxl.job.core.glue.GlueTypeEnum;
@@ -21,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -429,6 +435,71 @@ public class XxlJobServiceImpl implements XxlJobService {
 		result.put("triggerCountFailTotal", triggerCountFailTotal);
 
 		return new ReturnT<Map<String, Object>>(result);
+	}
+
+	@Override
+	public ReturnT<XxlJobInfo> queryById(int id) {
+
+		XxlJobInfo job = xxlJobInfoDao.loadById(id);
+
+		return new ReturnT<XxlJobInfo>(job);
+	}
+
+	@Override
+	public ReturnT<String> kill(int id) {
+
+		XxlJobInfo jobInfo = xxlJobInfoDao.loadById(id);
+		if (jobInfo==null) {
+			return new ReturnT<String>(500, I18nUtil.getString("jobinfo_glue_jobid_unvalid"));
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date triggerTimeEnd = Calendar.getInstance().getTime();
+
+		//查询所有正在执行的
+		List<XxlJobLog> executingList = xxlJobLogDao.pageList(0, Integer.MAX_VALUE, jobInfo.getJobGroup(), id, null, triggerTimeEnd, 3);
+
+		for (XxlJobLog log: executingList) {
+
+			if (ReturnT.SUCCESS_CODE != log.getTriggerCode()) {
+
+				logger.warn(log.getJobId() + I18nUtil.getString("joblog_kill_log_limit"));
+
+			}
+
+			// request of kill
+			ReturnT<String> runResult = null;
+			try {
+
+				ExecutorBiz executorBiz = XxlJobScheduler.getExecutorBiz(log.getExecutorAddress());
+				runResult = executorBiz.kill(new KillParam(jobInfo.getId()));
+
+			} catch (Exception e) {
+
+				logger.error(e.getMessage(), e);
+				runResult = new ReturnT<String>(500, e.getMessage());
+
+			}
+
+			if (ReturnT.SUCCESS_CODE == runResult.getCode()) {
+
+				log.setHandleCode(ReturnT.FAIL_CODE);
+				log.setHandleMsg( I18nUtil.getString("joblog_kill_log_byman")+":" + (runResult.getMsg()!=null?runResult.getMsg():""));
+				log.setHandleTime(new Date());
+				XxlJobCompleter.updateHandleInfoAndFinish(log);
+				//return new ReturnT<String>(runResult.getMsg());
+
+			} else {
+
+				//return new ReturnT<String>(500, runResult.getMsg());
+
+			}
+
+		}
+
+
+		return new ReturnT<String>("");
+
+
 	}
 
 }

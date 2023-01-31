@@ -40,14 +40,14 @@ public class ExtendApiJobLogController {
 	public XxlJobLogDao xxlJobLogDao;
 
 	@RequestMapping("/getJobsByGroup")
-	@PermissionLimit(limit = false)
+	@PermissionLimit(limitType = "token")
 	public ReturnT<List<XxlJobInfo>> getJobsByGroup(int jobGroup){
 		List<XxlJobInfo> list = xxlJobInfoDao.getJobsByGroup(jobGroup);
 		return new ReturnT<List<XxlJobInfo>>(list);
 	}
 	
 	@RequestMapping("/pageList")
-	@PermissionLimit(limit = false)
+	@PermissionLimit(limitType = "token")
 	public Map<String, Object> pageList(HttpServletRequest request,
 										@RequestParam(required = false, defaultValue = "0") int start,
 										@RequestParam(required = false, defaultValue = "10") int length,
@@ -81,7 +81,7 @@ public class ExtendApiJobLogController {
 
 
 	@RequestMapping("/logKill")
-	@PermissionLimit(limit = false)
+	@PermissionLimit(limitType = "token")
 	public ReturnT<String> logKill(int id){
 		// base check
 		XxlJobLog log = xxlJobLogDao.load(id);
