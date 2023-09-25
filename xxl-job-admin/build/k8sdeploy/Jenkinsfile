@@ -23,25 +23,26 @@ node('master') {
               branch = "${params.branch}"
 
               nacos_group = "${params.nacos_group}"
-              if(env=='dev'){
+			  if(env=='dev'){
 
                   nacos_host = "${nacos_host_test}"
                   nacos_namespace = "${nacos_namespace_dev}"
+                  nacos_auth_username = "${nacos_auth_username_dev}"
+                  nacos_auth_password = "${nacos_auth_password_dev}"
 
               }else if( env=='test'){
 
                   nacos_host = "${nacos_host_test}"
                   nacos_namespace = "${nacos_namespace_test}"
+                  nacos_auth_username = "${nacos_auth_username_test}"
+                  nacos_auth_password = "${nacos_auth_password_test}"
 
               }else if(env=='prod'){
 
                   nacos_host = "${nacos_host_prod}"
                   nacos_namespace = "${nacos_namespace_prod}"
-
-              }else if(env=='lcl'){
-
-                  nacos_host = "${nacos_host_prod}"
-                  nacos_namespace = "${nacos_namespace_lcl}"
+                  nacos_auth_username = "${nacos_auth_username_prod}"
+                  nacos_auth_password = "${nacos_auth_password_prod}"
 
               }
 
@@ -98,6 +99,8 @@ node('master') {
         sh "sed -i 's/\${NACOS_HOST}/${nacos_host}/' bootstrap.yml"
         sh "sed -i 's/\${NACOS_GROUP}/${nacos_group}/' bootstrap.yml"
         sh "sed -i 's/\${NACOS_NAMESPACE}/${nacos_namespace}/' bootstrap.yml"
+        sh "sed -i 's/\${NACOS_AUTH_USERNAME}/${nacos_auth_username}/' bootstrap.yml"
+        sh "sed -i 's/\${NACOS_AUTH_PASSWORD}/${nacos_auth_password}/' bootstrap.yml"
 
        if ("${params.skywalking_monitor}"=='true'){
 

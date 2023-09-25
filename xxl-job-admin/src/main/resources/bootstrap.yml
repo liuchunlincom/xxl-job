@@ -5,6 +5,8 @@ spring:
     bootstrap.enabled: true
     nacos:
       config:
+        username: nacos
+        password: nacos
         server-addr: 192.168.154.104:8849
         file-extension: yaml
         namespace: c2275df1-0df9-4e64-8e7f-3a011d534aa1 #lcl
