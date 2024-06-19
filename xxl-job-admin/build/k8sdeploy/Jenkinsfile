@@ -150,13 +150,13 @@ node('master') {
 
         if(env == 'dev' || env == 'test'){
 
-            sh "scp ${module}.yaml root@10.52.0.131:/APP/deploy/${product}/${module}.yaml"
+            sh "scp ${module}.yaml root@10.130.19.226:/data/deploy/${product}/${module}.yaml"
 
            try {//按照编排文件删除原有服务
 
-                sh '''ssh root@10.52.0.131 << EOF
+                sh '''ssh root@10.130.19.226 << EOF
 
-    				kubectl delete -f /APP/deploy/${product}/${module}.yaml
+    				kubectl delete -f /data/deploy/${product}/${module}.yaml
 
 EOF'''
 
@@ -166,9 +166,9 @@ EOF'''
 
             }finally {//按照编排文件部署服务
 
-                sh '''ssh root@10.52.0.131 << EOF
+                sh '''ssh root@10.130.19.226 << EOF
 
-    				kubectl apply -f /APP/deploy/${product}/${module}.yaml
+    				kubectl apply -f /data/deploy/${product}/${module}.yaml
 
 EOF'''
 
