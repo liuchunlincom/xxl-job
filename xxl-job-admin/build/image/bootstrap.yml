@@ -6,6 +6,8 @@ spring:
   cloud:
     nacos:
       config:
+        username: ${NACOS_AUTH_USERNAME}
+        password: ${NACOS_AUTH_PASSWORD}
         server-addr: ${NACOS_HOST}
         file-extension: yaml
         namespace: ${NACOS_NAMESPACE}

@@ -23,26 +23,25 @@ node('master') {
               branch = "${params.branch}"
 
               nacos_group = "${params.nacos_group}"
-			  if(env=='dev'){
+              if(env=='dev'){
 
                   nacos_host = "${nacos_host_test}"
                   nacos_namespace = "${nacos_namespace_dev}"
-                  nacos_auth_username = "${nacos_auth_username_dev}"
-                  nacos_auth_password = "${nacos_auth_password_dev}"
 
               }else if( env=='test'){
 
                   nacos_host = "${nacos_host_test}"
                   nacos_namespace = "${nacos_namespace_test}"
-                  nacos_auth_username = "${nacos_auth_username_test}"
-                  nacos_auth_password = "${nacos_auth_password_test}"
 
               }else if(env=='prod'){
 
                   nacos_host = "${nacos_host_prod}"
                   nacos_namespace = "${nacos_namespace_prod}"
-                  nacos_auth_username = "${nacos_auth_username_prod}"
-                  nacos_auth_password = "${nacos_auth_password_prod}"
+
+              }else if(env=='lcl'){
+
+                  nacos_host = "${nacos_host_prod}"
+                  nacos_namespace = "${nacos_namespace_lcl}"
 
               }
 
@@ -99,8 +98,6 @@ node('master') {
         sh "sed -i 's/\${NACOS_HOST}/${nacos_host}/' bootstrap.yml"
         sh "sed -i 's/\${NACOS_GROUP}/${nacos_group}/' bootstrap.yml"
         sh "sed -i 's/\${NACOS_NAMESPACE}/${nacos_namespace}/' bootstrap.yml"
-        sh "sed -i 's/\${NACOS_AUTH_USERNAME}/${nacos_auth_username}/' bootstrap.yml"
-        sh "sed -i 's/\${NACOS_AUTH_PASSWORD}/${nacos_auth_password}/' bootstrap.yml"
 
        if ("${params.skywalking_monitor}"=='true'){
 
@@ -150,13 +147,13 @@ node('master') {
 
         if(env == 'dev' || env == 'test'){
 
-            sh "scp ${module}.yaml root@10.130.19.226:/data/deploy/${product}/${module}.yaml"
+            sh "scp ${module}.yaml root@10.52.0.131:/APP/deploy/${product}/${module}.yaml"
 
            try {//按照编排文件删除原有服务
 
-                sh '''ssh root@10.130.19.226 << EOF
+                sh '''ssh root@10.52.0.131 << EOF
 
-    				kubectl delete -f /data/deploy/${product}/${module}.yaml
+    				kubectl delete -f /APP/deploy/${product}/${module}.yaml
 
 EOF'''
 
@@ -166,9 +163,9 @@ EOF'''
 
             }finally {//按照编排文件部署服务
 
-                sh '''ssh root@10.130.19.226 << EOF
+                sh '''ssh root@10.52.0.131 << EOF
 
-    				kubectl apply -f /data/deploy/${product}/${module}.yaml
+    				kubectl apply -f /APP/deploy/${product}/${module}.yaml
 
 EOF'''
 
@@ -176,13 +173,13 @@ EOF'''
 
         }else {
 
-            sh "scp ${module}.yaml root@10.130.19.223:/data/deploy/${product}/${module}.yaml"
+            sh "scp ${module}.yaml root@192.168.154.119:/APP/deploy/${product}/${module}.yaml"
 
            try {//按照编排文件删除原有服务
 
-                sh '''ssh root@10.130.19.223 << EOF
+                sh '''ssh root@192.168.154.119 << EOF
 
-    				kubectl delete -f /data/deploy/${product}/${module}.yaml
+    				kubectl delete -f /APP/deploy/${product}/${module}.yaml
 
 EOF'''
 
@@ -192,9 +189,9 @@ EOF'''
 
             }finally {//按照编排文件部署服务
 
-                sh '''ssh root@10.130.19.223 << EOF
+                sh '''ssh root@192.168.154.119 << EOF
 
-    				kubectl apply -f /data/deploy/${product}/${module}.yaml
+    				kubectl apply -f /APP/deploy/${product}/${module}.yaml
 
 EOF'''
 
